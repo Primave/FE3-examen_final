@@ -5,15 +5,26 @@ import React from 'react'
 
 const Detail = () => {
  
-  // Consumiendo el parametro dinamico de la URL deberan hacer un fetch a un user en especifico
+  const { state, fetchDentista } = useContextGlobal();
+  const { theme, dentista } = state;
+  const params = useParams();
+
+  useEffect(() => {
+    fetchDentista(params.id);
+  }, [fetchDentista, params.id]);
 
   return (
-    <>
-      <h1>Detail Dentist id </h1>
-      {/* aqui deberan renderizar la informacion en detalle de un user en especifico */}
-      {/* Deberan mostrar el name - email - phone - website por cada user en especifico */}
-    </>
-  )
-}
+    <div className={theme}>
+      <div className='center'>
+        <h1 className='detail-titulo'>Detail Dentist</h1>
+        <img className="card-img" src={doctor} alt="Doctor" />
+        <p>Name: {dentista.name}</p>
+        <p>Email: {dentista.email}</p>
+        <p>Phone: {dentista.phone}</p>
+        <p>Website: {dentista.website}</p>
+      </div>
+    </div>
+  );
+};
 
 export default Detail
