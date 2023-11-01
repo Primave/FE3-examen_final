@@ -1,56 +1,45 @@
 import React from "react";
-
+import { useState } from "react";
 
 const Form = () => {
-  const [user, setUser] = useState({
-    nombre: "",
-    correo: ""
-  });
-
-  const [show, setShow] = useState(false);
-  const [error, setError] = useState(false);
-
-  const handleSubmit = (event) => {
+  //Aqui deberan implementar el form completo con sus validaciones
+  const [mensaje, setMensaje] = useState(null);
+  
+  function handleSubmit(event) {
     event.preventDefault();
-    if (user.nombre.length > 5) {
-      setShow(true);
-      setError(false);
-    } else {
-      setError(true);
-    }
-  };
 
+    const nombre = event.target.nombre.value.trim();
+    const email = event.target.email.value.trim();
+
+    if (nombre.length < 6 || !/^[a-zA-Z\s]*$/.test(nombre)) {
+      alert("Por favor, introduzca un nombre válido (mínimo 6 caracteres y solo letras)");
+      return;
+    }
+
+    if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+      alert("Por favor, introduzca un correo electrónico válido");
+      return;
+    }
+
+    console.log(`Nombre: ${nombre}\nEmail: ${email}`);
+
+    setMensaje(
+      `Gracias ${nombre}, te contactaremos lo antes posible vía correo electrónico.`
+    );
+  }
   return (
     <div>
-      <form onSubmit={handleSubmit} >
-        <label htmlFor="nombre">Nombre</label>
-        <input
-          type="text"
-          id="nombre"
-          disabled={show}
-          onChange={(event) =>
-            setUser({ ...user, nombre: event.target.value })
-          }
-        />
-        <label htmlFor="correo">Email</label>
-        <input
-          type="email"
-          id="correo"
-          disabled={show}
-          onChange={(event) =>
-            setUser({ ...user, correo: event.target.value })
-          }
-        />
-        <button type="submit" className="submit-button">
-          Enviar
-        </button>
+      <form 
+        onSubmit={handleSubmit}
+       >
+        <label htmlFor="nombre">Nombre completo:</label>
+        <input type="text" id="nombre" name="nombre" />
+        <label htmlFor="email">Email:</label>
+        <input type="email" id="email" name="email" />
+        <button type="submit">Enviar</button>
+        
       </form>
-
-      {show ? (
-        <p>{`Gracias ${user.nombre}, te contactaremos lo antes posible vía email.`}</p>
-      ) : null}
-
-      {error && <p>Por favor verifique su información nuevamente.</p>}
+      {mensaje && <p>{mensaje}</p>}
     </div>
   );
 };

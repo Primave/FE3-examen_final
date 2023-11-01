@@ -1,20 +1,15 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import "../index.css"
+import { ContextGlobal } from './utils/global.context'
 
 const Footer = () => {
+  const {theme}= useContext(ContextGlobal)
   return (
-<footer>
-      
-      <p>Powered by</p>
-      <img src={DH}alt='DH-logo' />
-      
-      <div className="iconBox">
-        <img className="iconFooter"  src={iconFacebook}alt='fc-logo' />
-        <img className="iconFooter"  src={iconInstagram}alt='ig-logo' />
-        <img className="iconFooter"  src={iconTiktok}alt='tt-logo' />
-        <img className="iconFooter"  src={iconWhatsapp}alt='wh-logo' />
-      </div>
-  </footer>
-)
+    <footer className={`footer ${theme}`}>
+        <p>Powered by</p>
+        <img src={process.env.PUBLIC_URL + '/images/DH.png'} alt='DH-logo' />
+    </footer>
+  )
 }
 
 export default Footer

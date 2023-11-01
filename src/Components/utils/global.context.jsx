@@ -1,73 +1,61 @@
-import React, { createContext, useContext, useEffect, useReducer } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import { createContext } from "react";
 
-export const initialState = {
-  theme: "light",
-  data: [],
-  dentista: {},
-};
+export const initialState = { theme: "", data: [] };
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "SET_DATA":
-      return {
-        ...state, data: action.payload,
-      };
-    case "CHANGE_THEME":
-      return {
-        ...state, theme: action.payload,
-      };
-    case "SET_DENTISTA":
-      return {
-        ...state, dentista: action.payload,
-      };
-    default:
-      throw new Error();
-  }
-};
-
-export const ContextGlobal = createContext(undefined);
+export const ContextGlobal = createContext();
 
 export const ContextProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  //Aqui deberan implementar la logica propia del Context, utilizando el hook useMemo
+
+  const [theme, setTheme] = useState("light");
+
+  const [data, setData] = useState();
+  const [errorFetch, setErrorFetch] = useState();
+  const [loading, setLoading] = useState(true);
+
+  const url = "https://jsonplaceholder.typicode.com/users";
+
+  async function handleFetchDataDentist() {
+    setLoading(true);
+    try {
+      const dentistFetch = await (await fetch(url)).json();
+      console.log("d...", dentistFetch);
+      setData(dentistFetch);
+    } catch (error) {
+      setErrorFetch(error.message);
+      console.log("Error en Fetching...", error.message);
+    }
+    setLoading(false);
+  }
+
+
+  function changeTheme() {
+    setTheme(theme === "light" ? "dark" : "light");
+    console.log("se ha cambiado el tema");
+  }
 
   useEffect(() => {
-    fetchData();
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      setTheme(savedTheme);
+    }
   }, []);
 
-  const fetchData = () => {
-    const url = "https://jsonplaceholder.typicode.com/users";
+  useEffect(() => {
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
-    axios
-      .get(url)
-      .then((res) => {
-        dispatch({ type: "SET_DATA", payload: res.data });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const changeTheme = (newTheme) => {
-    dispatch({ type: "CHANGE_THEME", payload: newTheme });
-  };
-
-  const fetchDentista = (id) => {
-    axios
-      .get(`https://jsonplaceholder.typicode.com/users/${id}`)
-      .then((res) => {
-        dispatch({ type: "SET_DENTISTA", payload: res.data });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const value = {
+    theme,
+    changeTheme,
+    data,
+    errorFetch,
+    loading,
+    handleFetchDataDentist,
   };
 
   return (
-    <ContextGlobal.Provider value={{ state, fetchData, changeTheme, fetchDentista }}>
-      {children}
-    </ContextGlobal.Provider>
+    <ContextGlobal.Provider value={value}>{children}</ContextGlobal.Provider>
   );
 };
-
-export const useContextGlobal = () => useContext(ContextGlobal);
